@@ -5,53 +5,49 @@ import cors from "cors";
 import path from "path";
 
 import { connectDB } from "./lib/db.js";
+
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
-/* ========= MIDDLEWARE ========= */
 app.use(express.json());
 app.use(cookieParser());
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174", // add your frontend dev port
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
 
-/* ========= API ROUTES ========= */
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-/* ========= FRONTEND (PRODUCTION) ========= */
 if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  // static files
-  app.use(express.static(frontendPath));
-
-  // ✅ EXPRESS 5 SAFE WILDCARD (ONLY THIS)
-  app.use((req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
 
-/* ========= START SERVER ========= */
-const startServer = async () => {
-  try {
-    await connectDB();
-    server.listen(PORT, () => {
-      console.log("Server running on PORT:", PORT);
-    });
-  } catch (err) {
-    console.error("Server start error:", err);
-  }
-};
-
-startServer();
+server.listen(PORT, () => {
+  console.log("Server running on PORT:", PORT);
+  connectDB();
+});
