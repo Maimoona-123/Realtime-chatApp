@@ -10,18 +10,14 @@ import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import { app, server } from "./lib/socket.js";
 
-const corsOptions = {
-  origin: true, // Dynamically allow the requesting origin
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-};
-
-// Apply CORS to all routes
-app.use(cors(corsOptions));
-
-// Handle preflight for all routes using the new Express 5 syntax
-app.options("{/*splat}", cors(corsOptions)); 
+app.use(cors({
+    origin: [
+        "http://localhost:5174", 
+        "https://realtime-chat-app-qsq5.vercel.app"
+    ],
+    credentials: true, // Required for cookies/sessions
+    methods: ["GET", "POST", "PUT", "DELETE"],
+}));
 dotenv.config();
 
 const PORT = process.env.PORT || 5001;
