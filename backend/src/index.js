@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import { app, server } from "./lib/socket.js";
 
+dotenv.config();
 app.use(cors({
     origin: [
         "http://localhost:5174", 
@@ -17,8 +18,10 @@ app.use(cors({
     ],
     credentials: true, // Required for cookies/sessions
     methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+
 }));
-dotenv.config();
+app.options("*", cors());
 
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
