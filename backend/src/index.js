@@ -29,7 +29,6 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 app.use(cors(corsOptions));
-app.options("/api/*", cors(corsOptions));
 
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
