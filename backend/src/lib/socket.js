@@ -7,7 +7,8 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ["http://localhost:5174", 
+        "https://realtime-chat-app-qsq5.vercel.app"],
     credentials: true,
   },
 });
