@@ -10,22 +10,18 @@ import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import { app, server } from "./lib/socket.js";
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // In development/testing, this effectively allows ALL origins
-    // by reflecting the requesting origin back to the browser
-    callback(null, true); 
-  },
+const corsOptions = {
+  origin: true, // Dynamically allow the requesting origin
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
-}));
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
 
-// 2. Explicitly handle Preflight (OPTIONS) requests
-app.options("*", cors());
+// Apply CORS to all routes
+app.use(cors(corsOptions));
+
+// Handle preflight for all routes using the new Express 5 syntax
+app.options("{/*splat}", cors(corsOptions)); 
 dotenv.config();
 
 const PORT = process.env.PORT || 5001;
