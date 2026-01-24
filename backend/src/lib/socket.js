@@ -10,6 +10,8 @@ const io = new Server(server, {
     origin: ["http://localhost:5174", 
         "https://realtime-chat-app-qsq5.vercel.app"],
     credentials: true,
+    methods: ["GET", "POST"],
+
   },
 });
 
